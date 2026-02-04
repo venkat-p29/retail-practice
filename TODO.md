@@ -7,7 +7,7 @@
 
 ## TODO
 
-1. Create a pipeline/workflow to simulate the data flow.
+1. [DONE] Create a pipeline/workflow to simulate the data flow.
 1. Learn pytest framework. Practice unit tests.
 1. Practie integration tests.
 1. Handling schema changes when reading or writing, especially when writing.
