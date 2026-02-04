@@ -4,12 +4,14 @@ def validate_dates_count(df, date_col: str) -> None:
     return df.filter(F.col(date_col).isNull()).count()
 
 
-def write_to_table(df, target: str, env: str, merge_query: str) -> str:
+def write_to_table(spark, df, target: str, env: str, merge_query: str) -> str:
     """
-    Write a DataFrame to a Delta table with environment-specific logic.
+    Writes a Spark DataFrame to a Delta table with logic based on the environment.
 
     Parameters
     ----------
+    spark : SparkSession
+        Active Spark session.
     df : pyspark.sql.DataFrame
         DataFrame to write.
     target : str
@@ -26,16 +28,16 @@ def write_to_table(df, target: str, env: str, merge_query: str) -> str:
 
     Behavior
     --------
-    - In 'dev', overwrites the table with the DataFrame and schema.
-    - In other environments:
-        - Creates the table if it does not exist.
-        - Otherwise, runs the provided MERGE query to upsert records.
+    - In 'dev', overwrites the target table with the DataFrame and schema.
+    - In 'stage' or 'prod':
+        - If the table does not exist, creates it and loads the data.
+        - If the table exists, executes the provided MERGE query to upsert records.
     """
-    output = "Environment: {env}\n\n"
+    output = f"Environment: {env}\n\n"
 
     if env == "dev":
         df.write.mode("overwrite").option("overwriteSchema", "true").saveAsTable(target)
-        output += f"Table {target} overwritten."
+        output += f"Table {target} is overwritten."
     else:
         if not spark.catalog.tableExists(target):
             df.write.saveAsTable(target)
@@ -43,6 +45,6 @@ def write_to_table(df, target: str, env: str, merge_query: str) -> str:
         else:
             output += "Executing Delta Merge query...\n"
             spark.sql(merge_query)
-            output += f"Table {target} updated."
+            output += f"Table {target} is updated."
     
     return output
