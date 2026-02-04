@@ -1,7 +1,7 @@
 ## Done
 
-1. Create prod, dev schemas in `my_catalog`.
-1. Take shallow copies of prod tables in dev schema.
+1. Create prod, stage and dev schemas in `my_catalog`.
+1. Take shallow copies of prod tables in dev and stage schemas.
 1. Explore shallow copy.
 1. Create Git repo.
 

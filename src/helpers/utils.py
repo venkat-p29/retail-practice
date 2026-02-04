@@ -31,11 +31,11 @@ def write_to_table(df, target: str, env: str, merge_query: str) -> str:
         - Creates the table if it does not exist.
         - Otherwise, runs the provided MERGE query to upsert records.
     """
-    output = "Environment: {env}\n\n"
+    output = f"Environment: {env}\n\n"
 
     if env == "dev":
         df.write.mode("overwrite").option("overwriteSchema", "true").saveAsTable(target)
-        output += f"Table {target} overwritten."
+        output += f"Table {target} is overwritten."
     else:
         if not spark.catalog.tableExists(target):
             df.write.saveAsTable(target)
@@ -43,6 +43,6 @@ def write_to_table(df, target: str, env: str, merge_query: str) -> str:
         else:
             output += "Executing Delta Merge query...\n"
             spark.sql(merge_query)
-            output += f"Table {target} updated."
+            output += f"Table {target} is updated."
     
     return output
